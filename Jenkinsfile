@@ -96,11 +96,11 @@ pipeline {
                 bat 'mvn package'
             }
         }
-        stage('Failure Test') {
-    steps {
-        error 'Testing failure email notification'
-    }
-}
+//         stage('Failure Test') {
+//     steps {
+//         error 'Testing failure email notification'
+//     }
+// }
     }
 
     post {
