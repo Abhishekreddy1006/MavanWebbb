@@ -1,3 +1,1 @@
-Testing Jenkins automatic GitHub webhook trigger.
-Testing Jenkins automatic build trigger
-Testing automatic Jenkins trigger - 3
+Week 11 - Testing Continuous Integration
