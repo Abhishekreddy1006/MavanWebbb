@@ -54,31 +54,66 @@
 // }
 
 
-post {
-    success {
-        emailext(
-            subject: "SUCCESS: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-            body: """
-                <h2>Build Successful!</h2>
-                <p>Job: ${env.JOB_NAME}</p>
-                <p>Build Number: ${env.BUILD_NUMBER}</p>
-                <p>Check build: ${env.BUILD_URL}</p>
-            """,
-            to: 'YOUR_GMAIL@gmail.com'
-        )
+
+pipeline {
+    agent any
+
+    tools {
+        maven 'MAVEN_HOME'
     }
 
-    failure {
-        emailext(
-            subject: "FAILURE: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-            body: """
-                <h2>Build Failed!</h2>
-                <p>Job: ${env.JOB_NAME}</p>
-                <p>Build Number: ${env.BUILD_NUMBER}</p>
-                <p>Check build: ${env.BUILD_URL}</p>
-            """,
-            to: 'YOUR_GMAIL@gmail.com'
-        )
+    triggers {
+        githubPush()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Clean') {
+            steps {
+                bat 'mvn clean'
+            }
+        }
+
+        stage('Install') {
+            steps {
+                bat 'mvn install'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                bat 'mvn package'
+            }
+        }
+    }
+
+    post {
+        success {
+            emailext(
+                to: 'YOUR_GMAIL@gmail.com',
+                subject: "SUCCESS: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                body: "Build successful! Check: ${env.BUILD_URL}"
+            )
+        }
+
+        failure {
+            emailext(
+                to: 'YOUR_GMAIL@gmail.com',
+                subject: "FAILURE: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                body: "Build failed! Check: ${env.BUILD_URL}"
+            )
+        }
     }
 }
 
